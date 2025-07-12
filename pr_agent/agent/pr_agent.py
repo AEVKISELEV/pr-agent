@@ -9,6 +9,8 @@ from pr_agent.config_loader import get_settings
 from pr_agent.git_providers.utils import apply_repo_settings
 from pr_agent.log import get_logger
 from pr_agent.tools.pr_add_docs import PRAddDocs
+from pr_agent.tools.pr_architecture_review import PRArchitectureReview
+from pr_agent.tools.pr_check_tests import PRCheckTests
 from pr_agent.tools.pr_code_suggestions import PRCodeSuggestions
 from pr_agent.tools.pr_config import PRConfig
 from pr_agent.tools.pr_description import PRDescription
@@ -17,7 +19,6 @@ from pr_agent.tools.pr_help_docs import PRHelpDocs
 from pr_agent.tools.pr_help_message import PRHelpMessage
 from pr_agent.tools.pr_line_questions import PR_LineQuestions
 from pr_agent.tools.pr_questions import PRQuestions
-from pr_agent.tools.pr_architecture_review import PRArchitectureReview
 from pr_agent.tools.pr_reviewer import PRReviewer
 from pr_agent.tools.pr_similar_issue import PRSimilarIssue
 from pr_agent.tools.pr_update_changelog import PRUpdateChangelog
@@ -42,6 +43,7 @@ command2class = {
     "add_docs": PRAddDocs,
     "generate_labels": PRGenerateLabels,
     "help_docs": PRHelpDocs,
+    "check_tests": PRCheckTests,
     "review_architecture": PRArchitectureReview,
 }
 
@@ -86,7 +88,7 @@ class PRAgent:
                 if str(type(setting)) == "<class 'dynaconf.utils.boxing.DynaBox'>":
                     if hasattr(setting, 'extra_instructions'):
                         current_extra_instructions = setting.extra_instructions
-                        
+
                         # Define the language-specific instruction and the separator
                         lang_instruction_text = f"Your response MUST be written in the language corresponding to locale code: '{response_language}'. This is crucial."
                         separator_text = "\n======\n\nIn addition, "

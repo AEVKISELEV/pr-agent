@@ -99,7 +99,10 @@ class PRCheckTicket:
         user_prompt = environment.from_string(
             get_settings().pr_check_ticket_prompt.user
         ).render(self.vars)
-
+        
+        if get_settings().config.publish_output:
+            self.git_provider.publish_comment(user_prompt)
+            
         try:
             response, _ = await self.ai_handler.chat_completion(
                 model=get_settings().config.model,
@@ -108,6 +111,10 @@ class PRCheckTicket:
                 user=user_prompt,
             )
             data = load_yaml(response.strip())
+            
+            if get_settings().config.publish_output:
+                self.git_provider.publish_comment(data)
+
             solved_value = str(data.get("solved", "")).lower() if isinstance(data, dict) else ""
             return solved_value in {"yes", "true", "1"}
         except Exception as e:

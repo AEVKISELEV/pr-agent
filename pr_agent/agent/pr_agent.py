@@ -21,6 +21,7 @@ from pr_agent.tools.pr_architecture_review import PRArchitectureReview
 from pr_agent.tools.pr_reviewer import PRReviewer
 from pr_agent.tools.pr_similar_issue import PRSimilarIssue
 from pr_agent.tools.pr_update_changelog import PRUpdateChangelog
+from pr_agent.tools.pr_performance import PRPerformanceReview
 
 command2class = {
     "auto_review": PRReviewer,
@@ -43,6 +44,7 @@ command2class = {
     "generate_labels": PRGenerateLabels,
     "help_docs": PRHelpDocs,
     "review_architecture": PRArchitectureReview,
+    "check_performance": PRPerformanceReview,
 }
 
 commands = list(command2class.keys())

@@ -1,6 +1,6 @@
 # AGENTS Guidelines for PR-Agent
 
-This repository contains **PR-Agent**, an AI-powered assistant that reviews and augments pull/merge requests. The project is organized as a Python package with dedicated servers for each Git provider, a collection of tools (each implementing a command) and extensive documentation.
+**PR-Agent** is an AI-powered assistant that reviews and augments pull or merge requests. This repository is organized as a Python package with dedicated servers for each git provider, a collection of tools (each implementing a command), and extensive documentation.
 
 ## Project layout
 

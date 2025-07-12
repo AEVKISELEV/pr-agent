@@ -91,13 +91,14 @@ class PRCheckTicket:
     async def run(self):
         commit_message = self._load_last_commit_message()
         module, ticket_id = self._extract_ticket_id(commit_message)
+        bugtracker_url = self._load_bugtracker_url()
         if not ticket_id:
-            message = "\u2139\ufe0f Не найдено ID тикета в описании коммита {commit_message} -> {BUGTRACKER_URL}"
+            message = f"\u2139\ufe0f Не найдено ID тикета в описании коммита {commit_message} -> {bugtracker_url}"
             if get_settings().config.publish_output:
                 self.git_provider.publish_comment(message)
             return message
 
-        bugtracker_url = self._load_bugtracker_url()
+
         if not bugtracker_url:
             message = f"⚠️ BUGTRACKER_URL не найден для тикета {ticket_id}"
             if get_settings().config.publish_output:

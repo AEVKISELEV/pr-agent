@@ -205,6 +205,10 @@ file = ""              # in case there are several components with the same name
 class_name = ""        # in case there are several methods with the same name in the same file, you can specify the relevant class name
 enable_help_text=false
 
+[pr_check_tests] # /check_tests #
+extra_instructions = ""
+enable_help_text=false
+
 [pr_improve_component] # /improve_component #
 num_code_suggestions=4
 extra_instructions = ""

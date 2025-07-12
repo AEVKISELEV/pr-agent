@@ -1,6 +1,9 @@
 import copy
 from functools import partial
 
+from jinja2 import Environment, StrictUndefined
+
+
 from pr_agent.algo.ai_handlers.base_ai_handler import BaseAiHandler
 from pr_agent.algo.ai_handlers.litellm_ai_handler import LiteLLMAIHandler
 from pr_agent.algo.pr_processing import get_pr_diff, retry_with_fallback_models
@@ -23,52 +26,30 @@ class PRPerformanceReview:
         self.patches_diff = None
         self.prediction = None
         self.cli_mode = cli_mode
-        base_path = ".ai/pr-agent/prompt/PERFORMANCE.md"
-        branch = get_settings().get("PR_HELP_DOCS.REPO_DEFAULT_BRANCH", "main")
-
-        base_content = ""
+        prompt_path = '.ai/pr-agent/prompt/PERFORMANCE.md'
         try:
-            base_content = self.git_provider.get_pr_file_content(base_path, branch)
-        except Exception as e:
-            get_logger().warning(
-                f"Failed to load performance file {base_path}: {e}"
+            self.user_prompt_template = self.git_provider.get_pr_file_content(
+                prompt_path, self.git_provider.get_pr_branch())
+        except Exception:
+            self.user_prompt_template = (
+                "You are a software tester reviewing a pull request.\n"
+                "Diff:\n{{ diff }}\n\nFiles:\n{{ files_contents }}\n"
+                "Provide a bullet list of test scenarios that should be added."
             )
 
-        custom_path = None
-        for arg in args or []:
-            if arg and isinstance(arg, str) and arg.startswith("--custom-context="):
-                custom_path = arg.split("=", 1)[1].strip().strip('"').strip("'")
-                break
-
-        custom_content = ""
-        if custom_path:
-            try:
-                custom_content = self.git_provider.get_pr_file_content(custom_path, branch)
-            except Exception as e:
-                get_logger().warning(
-                    f"Failed to load custom performance file {custom_path}: {e}"
-                )
-
-        extra = get_settings().get("pr_performance", {}).get("extra_instructions", "") or ""
-        if base_content:
-            extra += (
-                f"\n\nProject performance context from {base_path}:\n"
-                f"{base_content}\n"
-            )
-        if custom_content:
-            extra += (
-                f"\n\nAdditional performance context from {custom_path}:\n"
-                f"{custom_content}\n"
-            )
+        self.system_prompt = "You are a code review assistant and performance engineer"  # simple system prompt
         self.vars = {
             "title": self.git_provider.pr.title,
-            "branch": self.git_provider.get_pr_branch(),
             "description": self.git_provider.get_pr_description(),
-            "language": self.main_language,
-            "diff": "",  # empty diff for initial calculation
-            "extra_instructions": extra,
+            "diff": "",
+            "files_contents": "",
         }
-        self.token_handler = TokenHandler(self.git_provider.pr, self.vars)
+        self.token_handler = TokenHandler(
+            self.git_provider.pr,
+            self.vars,
+            self.system_prompt,
+            self.user_prompt_template,
+        )
 
     async def run(self):
         try:
@@ -116,18 +97,14 @@ class PRPerformanceReview:
     async def _get_prediction(self, model: str) -> str:
         variables = copy.deepcopy(self.vars)
         variables["diff"] = self.patches_diff
-        from jinja2 import Environment, StrictUndefined, TemplateError
         environment = Environment(undefined=StrictUndefined)
-        try:
-            system_prompt = environment.from_string(get_settings().get('pr_performance_prompt', {}).get('system', "")).render(variables)
-        except TemplateError as e:
-            get_logger().error(f"Error rendering system prompt: {e}")
-            system_prompt = ""
+        system_prompt = environment.from_string(self.system_prompt).render(variables)
+        user_prompt = environment.from_string(self.user_prompt_template).render(variables)
         
         response, finish_reason = await self.ai_handler.chat_completion(
             model=model,
             system=system_prompt,
-            user=variables.get("extra_instructions", ""),
+            user=user_prompt,
         )
         return response
 

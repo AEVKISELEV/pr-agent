@@ -123,15 +123,11 @@ class PRPerformanceReview:
         except TemplateError as e:
             get_logger().error(f"Error rendering system prompt: {e}")
             system_prompt = ""
-        try:
-            user_prompt = environment.from_string(get_settings().get('pr_performance_prompt', {}).get('user', "")).render(variables)
-        except TemplateError as e:
-            get_logger().error(f"Error rendering user prompt: {e}")
-            user_prompt = ""
+        
         response, finish_reason = await self.ai_handler.chat_completion(
             model=model,
             system=system_prompt,
-            user=user_prompt
+            user=variables.get("extra_instructions", ""),
         )
         return response
 

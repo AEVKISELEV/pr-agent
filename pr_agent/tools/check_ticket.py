@@ -1,15 +1,19 @@
 import json
-import re
 import os
+import re
 from functools import partial
-from typing import List, Tuple
 
 import requests
+from jinja2 import Environment, StrictUndefined
+from typing import Tuple
 
-from pr_agent.config_loader import get_settings
-from pr_agent.git_providers import get_git_provider
+from pr_agent.algo.ai_handlers.base_ai_handler import BaseAiHandler
+from pr_agent.algo.ai_handlers.litellm_ai_handler import LiteLLMAIHandler
 from pr_agent.algo.pr_processing import get_pr_diff
 from pr_agent.algo.token_handler import TokenHandler
+from pr_agent.algo.utils import load_yaml
+from pr_agent.config_loader import get_settings
+from pr_agent.git_providers import get_git_provider
 from pr_agent.log import get_logger
 
 
@@ -17,11 +21,18 @@ class PRCheckTicket:
     """Custom command to validate bug ticket resolution in a commit."""
 
     TICKET_PATTERN = re.compile(r"([\w_]+):\s*(\d+):\s*", re.IGNORECASE)
-    LINE_PATTERN = re.compile(r"(?:line|строк[а]?)[\s:]*([0-9]+)(?:-([0-9]+))?", re.IGNORECASE)
 
-    def __init__(self, pr_url: str, args=None, ai_handler: partial = None):
+    def __init__(self, pr_url: str, args=None,
+                 ai_handler: partial[BaseAiHandler,] = LiteLLMAIHandler):
         self.git_provider = get_git_provider()(pr_url)
+        self.ai_handler = ai_handler()
         self.pr_url = pr_url
+
+        self.vars = {
+            "ticket_description": "",
+            "commit_message": "",
+            "diff": "",
+        }
 
     def _load_bugtracker_url(self) -> str:
         """Load bug tracker base URL from environment variables."""
@@ -43,14 +54,6 @@ class PRCheckTicket:
             return match.group(1), match.group(2)
         return "", ""
 
-    @staticmethod
-    def _extract_lines(description: str) -> List[Tuple[int, int]]:
-        lines = []
-        for m in PRCheckTicket.LINE_PATTERN.finditer(description):
-            start = int(m.group(1))
-            end = int(m.group(2) or start)
-            lines.append((start, end))
-        return lines
 
     def _load_last_commit_message(self) -> str:
         messages = self.git_provider.get_commit_messages()
@@ -79,14 +82,37 @@ class PRCheckTicket:
             get_logger().error(f"Failed to get diff: {e}")
             return ""
 
-    @staticmethod
-    def _diff_contains_lines(diff: str, lines: List[Tuple[int, int]]) -> bool:
-        for start, end in lines:
-            for n in range(start, end + 1):
-                pattern = rf"^\s*{n}\s+[+-]"
-                if re.search(pattern, diff, flags=re.MULTILINE):
-                    return True
-        return False
+
+    async def _validate_with_ai(self, description: str, commit_message: str, diff: str) -> bool:
+        """Use AI to check if the commit fixes the ticket."""
+        self.vars.update(
+            {
+                "ticket_description": description,
+                "commit_message": commit_message,
+                "diff": diff,
+            }
+        )
+        environment = Environment(undefined=StrictUndefined)
+        system_prompt = environment.from_string(
+            get_settings().pr_check_ticket_prompt.system
+        ).render(self.vars)
+        user_prompt = environment.from_string(
+            get_settings().pr_check_ticket_prompt.user
+        ).render(self.vars)
+
+        try:
+            response, _ = await self.ai_handler.chat_completion(
+                model=get_settings().config.model,
+                temperature=get_settings().config.temperature,
+                system=system_prompt,
+                user=user_prompt,
+            )
+            data = load_yaml(response.strip())
+            solved_value = str(data.get("solved", "")).lower() if isinstance(data, dict) else ""
+            return solved_value in {"yes", "true", "1"}
+        except Exception as e:
+            get_logger().error(f"AI validation failed: {e}")
+            return False
 
     async def run(self):
         commit_message = self._load_last_commit_message()
@@ -120,9 +146,8 @@ class PRCheckTicket:
             return message
 
         description = data.get("description", "")
-        lines = self._extract_lines(description)
         diff = self._get_pr_diff()
-        solved = bool(lines and diff and self._diff_contains_lines(diff, lines))
+        solved = await self._validate_with_ai(description, commit_message, diff)
         if solved:
             message = f"✅ Проблема из тикета {ticket_id} решена в этом коммите."
         else:

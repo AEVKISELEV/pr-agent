@@ -710,6 +710,10 @@ def update_settings_from_args(args: List[str]) -> List[str]:
     if args:
         for arg in args:
             arg = arg.strip()
+            # allow command-specific flags like --custom-context to pass through
+            if arg.startswith('--custom-context='):
+                other_args.append(arg)
+                continue
             if arg.startswith('--'):
                 arg = arg.strip('-').strip()
                 vals = arg.split('=', 1)

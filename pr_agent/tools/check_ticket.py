@@ -86,6 +86,7 @@ class PRCheckTicket:
             get_logger().error(f"Failed to get diff: {e}")
             if get_settings().config.publish_output:
                 self.git_provider.publish_comment(f"Failed to get diff: {e}")
+
             return ""
 
 

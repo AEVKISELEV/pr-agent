@@ -55,12 +55,17 @@ class PRCheckTests:
                 return None
 
             get_logger().info("Generating test scenarios for PR...")
+            if get_settings().config.publish_output:
+                self.git_provider.publish_comment("Preparing test scenarios...", is_temporary=True)
+
             await retry_with_fallback_models(self._prepare_prediction)
+
             if self.prediction and get_settings().config.publish_output:
+                self.git_provider.remove_initial_comment()
                 self.git_provider.publish_comment(self.prediction)
         except Exception as e:
             get_logger().error(f"Error generating test scenarios: {e}")
-        return ""
+        return None
 
     async def _prepare_prediction(self, model: str):
         self.patches_diff = get_pr_diff(self.git_provider, self.token_handler, model)

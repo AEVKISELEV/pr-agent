@@ -1,0 +1,21 @@
+[pr_check_ticket_prompt]
+system="""You are TicketValidator, an AI assistant that determines whether a commit fixes the problem described in a bug ticket."""
+user="""Ticket Description:
+======
+{{ ticket_description|trim }}
+======
+
+Commit Message:
+======
+{{ commit_message|trim }}
+======
+
+Commit Diff:
+======
+{{ diff|trim }}
+======
+
+Respond in YAML with two fields:
+  solved: yes or no
+  explanation: short reasoning
+"""

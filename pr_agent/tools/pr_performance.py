@@ -11,7 +11,7 @@ from pr_agent.git_providers.git_provider import get_main_pr_language
 from pr_agent.log import get_logger
 
 
-class PRPerformance:
+class PRPerformanceReview:
     def __init__(self, pr_url: str, cli_mode=False, args: list = None,
                  ai_handler: partial[BaseAiHandler,] = LiteLLMAIHandler):
         self.git_provider = get_git_provider()(pr_url)

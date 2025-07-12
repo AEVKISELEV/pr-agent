@@ -29,16 +29,21 @@ class PRPerformanceReview:
         }
 
         prompt_path = '.ai/pr-agent/prompt/PERFORMANCE.md'
-        try:
-            self.user_prompt_template = self.git_provider.get_pr_file_content(
-                prompt_path, self.git_provider.get_pr_branch())
-        except Exception:
-            self.user_prompt_template = (
+
+        self.user_prompt_template = (
                 "You are a performance reviewer for a pull request.\n"
                 "Diff:\n{{ diff }}\n\n"
-                "Instructions:\n{{ extra_instructions }}\n"
                 "Provide a bullet list of performance issues and suggestions."
             )
+        
+        try:
+            prompt = self.git_provider.get_pr_file_content(
+                prompt_path, self.git_provider.get_pr_branch())
+            
+            if prompt:
+                self.user_prompt_template = prompt
+        except Exception as e:
+            get_logger().debug(f"GET PROMPT", ERROR=e)
 
         self.system_prompt = "You are a code review assistant specializing in performance analysis."
 

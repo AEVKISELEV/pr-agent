@@ -23,8 +23,8 @@ class PRArchitectureReview(PRReviewer):
 
         super().__init__(pr_url, args=cleaned_args, ai_handler=ai_handler)
 
-        base_path = "ARHITECTURE.md"
-        branch = "master"
+        base_path = "ARCHITECTURE.md"
+        branch = get_settings().get("PR_HELP_DOCS.REPO_DEFAULT_BRANCH", "main")
 
         base_content = ""
         try:

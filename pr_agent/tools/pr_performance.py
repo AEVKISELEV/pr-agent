@@ -86,6 +86,7 @@ class PRPerformanceReview:
 
             await retry_with_fallback_models(self._prepare_prediction)
             if not self.prediction:
+                self.git_provider.publish_comment("No prediction", is_temporary=True)
                 self.git_provider.remove_initial_comment()
                 return None
 
@@ -115,10 +116,18 @@ class PRPerformanceReview:
     async def _get_prediction(self, model: str) -> str:
         variables = copy.deepcopy(self.vars)
         variables["diff"] = self.patches_diff
-        from jinja2 import Environment, StrictUndefined
+        from jinja2 import Environment, StrictUndefined, TemplateError
         environment = Environment(undefined=StrictUndefined)
-        system_prompt = environment.from_string(get_settings().get('pr_performance_prompt', {}).get('system', "")) .render(variables)
-        user_prompt = environment.from_string(get_settings().get('pr_performance_prompt', {}).get('user', "")) .render(variables)
+        try:
+            system_prompt = environment.from_string(get_settings().get('pr_performance_prompt', {}).get('system', "")).render(variables)
+        except TemplateError as e:
+            get_logger().error(f"Error rendering system prompt: {e}")
+            system_prompt = ""
+        try:
+            user_prompt = environment.from_string(get_settings().get('pr_performance_prompt', {}).get('user', "")).render(variables)
+        except TemplateError as e:
+            get_logger().error(f"Error rendering user prompt: {e}")
+            user_prompt = ""
         response, finish_reason = await self.ai_handler.chat_completion(
             model=model,
             system=system_prompt,

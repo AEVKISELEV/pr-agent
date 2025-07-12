@@ -29,6 +29,7 @@ class PRPerformanceReview:
         }
 
         prompt_path = '.ai/pr-agent/prompt/PERFORMANCE.md'
+        branch = get_settings().get("PR_HELP_DOCS.REPO_DEFAULT_BRANCH", "main")
 
         self.user_prompt_template = (
                 "You are a performance reviewer for a pull request.\n"
@@ -38,7 +39,7 @@ class PRPerformanceReview:
         
         try:
             prompt = self.git_provider.get_pr_file_content(
-                prompt_path, self.git_provider.get_pr_branch())
+                prompt_path, branch)
             
             if prompt:
                 self.user_prompt_template = prompt

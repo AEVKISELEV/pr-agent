@@ -47,6 +47,9 @@ class PRCheckTests:
             self.system_prompt,
             self.user_prompt_template,
         )
+        self.progress = "## Generating test scenarios\n\n"
+        self.progress += """\nWork in progress ...<br>\n<img src="https://codium.ai/images/pr_agent/dual_ball_loading-crop.gif" width=48>"""
+        self.progress_response = None
 
     async def run(self):
         try:
@@ -55,16 +58,32 @@ class PRCheckTests:
                 return None
 
             get_logger().info("Generating test scenarios for PR...")
-            if get_settings().config.publish_output:
+            if (get_settings().config.publish_output and get_settings().config.publish_output_progress
+                    and not get_settings().config.get('is_auto_command', False)):
+                if self.git_provider.is_supported("gfm_markdown"):
+                    self.progress_response = self.git_provider.publish_comment(self.progress)
+                else:
+                    self.git_provider.publish_comment("Preparing test scenarios...", is_temporary=True)
+            elif get_settings().config.publish_output:
                 self.git_provider.publish_comment("Preparing test scenarios...", is_temporary=True)
 
             await retry_with_fallback_models(self._prepare_prediction)
 
             if self.prediction and get_settings().config.publish_output:
-                self.git_provider.remove_initial_comment()
-                self.git_provider.publish_comment(self.prediction)
+                if self.progress_response:
+                    self.git_provider.edit_comment(self.progress_response, body=self.prediction)
+                else:
+                    self.git_provider.remove_initial_comment()
+                    self.git_provider.publish_comment(self.prediction)
         except Exception as e:
             get_logger().error(f"Error generating test scenarios: {e}")
+            if self.progress_response:
+                self.progress_response.delete()
+            else:
+                try:
+                    self.git_provider.remove_initial_comment()
+                except Exception:
+                    pass
         return None
 
     async def _prepare_prediction(self, model: str):

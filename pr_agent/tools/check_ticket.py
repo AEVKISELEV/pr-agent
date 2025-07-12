@@ -110,6 +110,9 @@ class PRCheckTicket:
                 system=system_prompt,
                 user=user_prompt,
             )
+            if get_settings().config.publish_output:
+                self.git_provider.publish_comment(response)
+            
             data = load_yaml(response.strip())
             
             if get_settings().config.publish_output:

@@ -222,6 +222,7 @@ class PRHelpMessage:
                 tool_names.append(f"[CUSTOM PROMPT]({base_path}/custom_prompt/) 💎")
                 tool_names.append(f"[IMPLEMENT]({base_path}/implement/) 💎")
                 tool_names.append(f"[CHECK TICKET]({base_path}/check_ticket/)")
+                tool_names.append(f"[CHECK SECURITY]({base_path}/check_security/)")
                 tool_names.append(f"[REVIEW ARCHITECTURE DEBUG]({base_path}/review_architecture_debug/)")
 
                 descriptions = []
@@ -242,6 +243,7 @@ class PRHelpMessage:
                 descriptions.append("Generates custom suggestions for improving the PR code, derived only from a specific guidelines prompt defined by the user")
                 descriptions.append("Generates implementation code from review suggestions")
                 descriptions.append("Checks if a commit resolves a referenced ticket")
+                descriptions.append("Review the PR for potential security vulnerabilities")
                 descriptions.append("Returns the architecture review prompt without calling the AI")
 
                 commands  =[]
@@ -261,6 +263,7 @@ class PRHelpMessage:
                 commands.append("`/custom_prompt`")
                 commands.append("`/implement`")
                 commands.append("`/check_ticket`")
+                commands.append("`/check_security`")
                 commands.append("`/review_architecture_debug`")
 
                 checkbox_list = []
@@ -280,6 +283,7 @@ class PRHelpMessage:
                 checkbox_list.append("[*]")
                 checkbox_list.append("[*]")
                 checkbox_list.append(" - [ ] Run <!-- /check_ticket -->")
+                checkbox_list.append(" - [ ] Run <!-- /check_security -->")
                 checkbox_list.append("[*]")
 
                 if isinstance(self.git_provider, GithubProvider) and not get_settings().config.get('disable_checkboxes', False):

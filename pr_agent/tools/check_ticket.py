@@ -16,7 +16,7 @@ from pr_agent.log import get_logger
 class PRCheckTicket:
     """Custom command to validate bug ticket resolution in a commit."""
 
-    TICKET_PATTERN = re.compile(r"([\w_]+):\s*(\d+):\s*\[BUGS\]", re.IGNORECASE)
+    TICKET_PATTERN = re.compile(r"([\w_]+):\s*(\d+):\s*", re.IGNORECASE)
     LINE_PATTERN = re.compile(r"(?:line|строк[а]?)[\s:]*([0-9]+)(?:-([0-9]+))?", re.IGNORECASE)
 
     def __init__(self, pr_url: str, args=None, ai_handler: partial = None):

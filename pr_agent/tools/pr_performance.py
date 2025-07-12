@@ -10,6 +10,7 @@ from pr_agent.algo.token_handler import TokenHandler
 from pr_agent.config_loader import get_settings
 from pr_agent.git_providers import get_git_provider
 from pr_agent.log import get_logger
+from pr_agent.algo.utils import ModelType
 
 class PRPerformanceReview:
     def __init__(self, pr_url: str, args: list = None,
@@ -67,7 +68,7 @@ class PRPerformanceReview:
             elif get_settings().config.publish_output:
                 self.git_provider.publish_comment("Preparing performance review...", is_temporary=True)
 
-            await retry_with_fallback_models(self._prepare_prediction)
+            await retry_with_fallback_models(self._prepare_prediction, model_type=ModelType.REGULAR)
 
             if self.prediction and get_settings().config.publish_output:
                 if self.progress_response:
@@ -93,11 +94,13 @@ class PRPerformanceReview:
         environment = Environment(undefined=StrictUndefined)
         system_prompt = environment.from_string(self.system_prompt).render(variables)
         user_prompt = environment.from_string(self.user_prompt_template).render(variables)
+
+        get_logger().debug(f"GET Prediction", user_prompt=user_prompt)
+
         response, _ = await self.ai_handler.chat_completion(
             model=model,
             temperature=get_settings().config.temperature,
             system=system_prompt,
             user=user_prompt,
-            extra_instructions=variables.get("extra_instructions", "")
         )
         self.prediction = response

@@ -92,7 +92,7 @@ class PRCheckTicket:
         commit_message = self._load_last_commit_message()
         module, ticket_id = self._extract_ticket_id(commit_message)
         if not ticket_id:
-            message = "\u2139\ufe0f Не найдено ID тикета в описании коммита"
+            message = "\u2139\ufe0f Не найдено ID тикета в описании коммита {commit_message} -> {BUGTRACKER_URL}"
             if get_settings().config.publish_output:
                 self.git_provider.publish_comment(message)
             return message

@@ -114,7 +114,7 @@ class PRCheckTicket:
             data = resp.json()
         except Exception as e:
             get_logger().error(f"Failed to fetch ticket {ticket_id}: {e}")
-            message = f"⚠️ Не удалось получить данные тикета {ticket_id} по урлу: {resp.url} "
+            message = f"⚠️ Не удалось получить данные тикета {ticket_id} URL: {resp.url} Ответ (raw): {resp.text}"
             if get_settings().config.publish_output:
                 self.git_provider.publish_comment(message)
             return message

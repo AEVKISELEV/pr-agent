@@ -221,6 +221,7 @@ class PRHelpMessage:
                 tool_names.append(f"[CI FEEDBACK]({base_path}/ci_feedback/) 💎")
                 tool_names.append(f"[CUSTOM PROMPT]({base_path}/custom_prompt/) 💎")
                 tool_names.append(f"[IMPLEMENT]({base_path}/implement/) 💎")
+                tool_names.append(f"[REVIEW ARCHITECTURE DEBUG]({base_path}/review_architecture_debug/)")
 
                 descriptions = []
                 descriptions.append("Generates PR description - title, type, summary, code walkthrough and labels")
@@ -239,6 +240,7 @@ class PRHelpMessage:
                 descriptions.append("Generates feedback and analysis for a failed CI job")
                 descriptions.append("Generates custom suggestions for improving the PR code, derived only from a specific guidelines prompt defined by the user")
                 descriptions.append("Generates implementation code from review suggestions")
+                descriptions.append("Returns the architecture review prompt without calling the AI")
 
                 commands  =[]
                 commands.append("`/describe`")
@@ -256,6 +258,7 @@ class PRHelpMessage:
                 commands.append("`/checks`")
                 commands.append("`/custom_prompt`")
                 commands.append("`/implement`")
+                commands.append("`/review_architecture_debug`")
 
                 checkbox_list = []
                 checkbox_list.append(" - [ ] Run <!-- /describe -->")

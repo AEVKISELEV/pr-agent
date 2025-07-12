@@ -19,9 +19,12 @@ from pr_agent.tools.pr_help_docs import PRHelpDocs
 from pr_agent.tools.pr_help_message import PRHelpMessage
 from pr_agent.tools.pr_line_questions import PR_LineQuestions
 from pr_agent.tools.pr_questions import PRQuestions
+from pr_agent.tools.pr_architecture_review import PRArchitectureReview
+from pr_agent.tools.pr_architecture_review_debug import PRArchitectureReviewDebug
 from pr_agent.tools.pr_reviewer import PRReviewer
 from pr_agent.tools.pr_similar_issue import PRSimilarIssue
 from pr_agent.tools.pr_update_changelog import PRUpdateChangelog
+from pr_agent.tools.pr_performance import PRPerformanceReview
 
 command2class = {
     "auto_review": PRReviewer,
@@ -45,6 +48,9 @@ command2class = {
     "help_docs": PRHelpDocs,
     "check_tests": PRCheckTests,
     "review_architecture": PRArchitectureReview,
+    "review_architecture_debug": 
+  ,
+    "check_performance": PRPerformanceReview,
 }
 
 commands = list(command2class.keys())

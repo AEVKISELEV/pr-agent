@@ -23,7 +23,7 @@ class PRPerformanceReview:
         self.patches_diff = None
         self.prediction = None
         self.cli_mode = cli_mode
-        base_path = "PERFORMANCE.md"
+        base_path = ".ai/pr-agent/prompt/PERFORMANCE.md"
         branch = get_settings().get("PR_HELP_DOCS.REPO_DEFAULT_BRANCH", "main")
 
         base_content = ""

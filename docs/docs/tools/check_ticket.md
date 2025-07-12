@@ -9,8 +9,8 @@ If the relevant lines are changed, the tool comments that the ticket problem was
 /check_ticket
 ```
 
-The bug tracker URL must be provided in `config.qodo.json` as:
+Set the bug tracker URL via an environment variable, e.g. in your `.env` file:
 
-```json
-{ "BUGTRACKER_URL": "https://my-bugtracker" }
+```bash
+BUGTRACKER_URL="https://my-bugtracker"
 ```

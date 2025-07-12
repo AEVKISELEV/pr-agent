@@ -1,6 +1,6 @@
 import json
 import re
-from pathlib import Path
+import os
 from functools import partial
 from typing import List, Tuple
 
@@ -24,13 +24,16 @@ class PRCheckTicket:
         self.pr_url = pr_url
 
     def _load_bugtracker_url(self) -> str:
-        config_file = Path("config.qodo.json")
-        if config_file.is_file():
-            try:
-                data = json.loads(config_file.read_text())
-                return data.get("BUGTRACKER_URL", "")
-            except Exception as e:
-                get_logger().error(f"Failed to parse {config_file}: {e}")
+        """Load bug tracker base URL from environment variables."""
+        env_keys = [
+            "BUGTRACKER_URL",
+            "BUGTRACKER.URL",
+            "BUGTRACKER__URL",
+        ]
+        for key in env_keys:
+            value = os.getenv(key)
+            if value:
+                return value
         return ""
 
     @staticmethod

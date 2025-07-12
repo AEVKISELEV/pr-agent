@@ -25,6 +25,7 @@ from pr_agent.tools.pr_reviewer import PRReviewer
 from pr_agent.tools.pr_similar_issue import PRSimilarIssue
 from pr_agent.tools.pr_update_changelog import PRUpdateChangelog
 from pr_agent.tools.pr_performance import PRPerformanceReview
+from pr_agent.tools.pr_security import PRSecurityReview
 from pr_agent.tools.check_ticket import PRCheckTicket
 
 command2class = {
@@ -51,6 +52,7 @@ command2class = {
     "review_architecture": PRArchitectureReview,
     "review_architecture_debug": PRArchitectureReviewDebug,
     "check_performance": PRPerformanceReview,
+    "check_security": PRSecurityReview,
     "check_ticket": PRCheckTicket,
 }
 

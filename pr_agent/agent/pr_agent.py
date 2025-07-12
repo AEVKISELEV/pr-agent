@@ -48,8 +48,7 @@ command2class = {
     "help_docs": PRHelpDocs,
     "check_tests": PRCheckTests,
     "review_architecture": PRArchitectureReview,
-    "review_architecture_debug": 
-  ,
+    "review_architecture_debug": PRArchitectureReviewDebug,
     "check_performance": PRPerformanceReview,
 }
 

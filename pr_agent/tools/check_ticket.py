@@ -77,9 +77,15 @@ class PRCheckTicket:
                 add_line_numbers_to_hunks=True,
                 disable_extra_lines=False,
             )
+
+            if get_settings().config.publish_output:
+                self.git_provider.publish_comment(f"Diff: {diff}")
+                            
             return diff or ""
         except Exception as e:
             get_logger().error(f"Failed to get diff: {e}")
+            if get_settings().config.publish_output:
+                self.git_provider.publish_comment(f"Failed to get diff: {e}")
             return ""
 
 

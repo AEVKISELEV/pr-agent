@@ -60,7 +60,7 @@ Run PR-Agent locally on your repository via command line: [Local CLI setup guide
 ### Qodo Merge as post-commit in your local IDE
 See [here](https://github.com/qodo-ai/agents/tree/main/agents/qodo-merge-post-commit)
 
-### Discover Qodo Merge 💎 
+### Discover Qodo Merge 💎
 Zero-setup hosted solution with advanced features and priority support
 -  [Intro and Installation guide](https://qodo-merge-docs.qodo.ai/installation/qodo_merge/)
 -  [Plans & Pricing](https://www.qodo.ai/pricing/)
@@ -123,6 +123,8 @@ Supported commands per platform:
 |                                                         | [Custom Prompt](https://qodo-merge-docs.qodo.ai/tools/custom_prompt/) 💎                                            |   ✅   |   ✅   |    ✅     |              |       |
 |                                                         | [Generate Custom Labels](https://qodo-merge-docs.qodo.ai/tools/custom_labels/) 💎                                   |   ✅   |   ✅   |           |              |       |
 |                                                         | [Generate Tests](https://qodo-merge-docs.qodo.ai/tools/test/) 💎                                                    |   ✅   |   ✅   |           |              |       |
+|                                                         | [Check Tests](https://qodo-merge-docs.qodo.ai/tools/check_tests/) 💎
+                |   ✅   |   ✅   |           |              |       |
 |                                                         | [Implement](https://qodo-merge-docs.qodo.ai/tools/implement/) 💎                                                    |   ✅   |   ✅   |    ✅     |              |       |
 |                                                         | [Scan Repo Discussions](https://qodo-merge-docs.qodo.ai/tools/scan_repo_discussions/) 💎                            |   ✅   |        |           |              |       |
 |                                                         | [Similar Code](https://qodo-merge-docs.qodo.ai/tools/similar_code/) 💎                                              |   ✅   |        |           |              |       |

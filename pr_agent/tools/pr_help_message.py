@@ -10,9 +10,11 @@ from pr_agent.algo.ai_handlers.base_ai_handler import BaseAiHandler
 from pr_agent.algo.ai_handlers.litellm_ai_handler import LiteLLMAIHandler
 from pr_agent.algo.pr_processing import retry_with_fallback_models
 from pr_agent.algo.token_handler import TokenHandler
-from pr_agent.algo.utils import ModelType, clip_tokens, load_yaml, get_max_tokens
+from pr_agent.algo.utils import (ModelType, clip_tokens, get_max_tokens,
+                                 load_yaml)
 from pr_agent.config_loader import get_settings
-from pr_agent.git_providers import BitbucketServerProvider, GithubProvider, get_git_provider_with_context
+from pr_agent.git_providers import (BitbucketServerProvider, GithubProvider,
+                                    get_git_provider_with_context)
 from pr_agent.log import get_logger
 
 
@@ -211,6 +213,7 @@ class PRHelpMessage:
                 tool_names.append(f"[HELP DOCS]({base_path}/help_docs/)")
                 tool_names.append(f"[ADD DOCS]({base_path}/documentation/) 💎")
                 tool_names.append(f"[TEST]({base_path}/test/) 💎")
+                tool_names.append(f"[CHECK TESTS]({base_path}/check_tests/) 💎")
                 tool_names.append(f"[IMPROVE COMPONENT]({base_path}/improve_component/) 💎")
                 tool_names.append(f"[ANALYZE]({base_path}/analyze/) 💎")
                 tool_names.append(f"[ASK]({base_path}/ask/)")
@@ -228,6 +231,7 @@ class PRHelpMessage:
                 descriptions.append("Answers a question regarding this repository, or a given one, based on given documentation path")
                 descriptions.append("Generates documentation to methods/functions/classes that changed in the PR")
                 descriptions.append("Generates unit tests for a specific component, based on the PR code change")
+                descriptions.append("Suggests test scenarios that should be covered according to the PR changes and review notes")
                 descriptions.append("Code suggestions for a specific component that changed in the PR")
                 descriptions.append("Identifies code components that changed in the PR, and enables to interactively generate tests, docs, and code suggestions for each component")
                 descriptions.append("Answering free-text questions about the PR")
@@ -246,6 +250,7 @@ class PRHelpMessage:
                 commands.append("`/help_docs`")
                 commands.append("`/add_docs`")
                 commands.append("`/test`")
+                commands.append("`/check_tests`")
                 commands.append("`/improve_component`")
                 commands.append("`/analyze`")
                 commands.append("`/ask`")
@@ -263,6 +268,7 @@ class PRHelpMessage:
                 checkbox_list.append(" - [ ] Run <!-- /help_docs -->")
                 checkbox_list.append(" - [ ] Run <!-- /add_docs -->")
                 checkbox_list.append(" - [ ] Run <!-- /test -->")
+                checkbox_list.append(" - [ ] Run <!-- /check_tests -->")
                 checkbox_list.append(" - [ ] Run <!-- /improve_component -->")
                 checkbox_list.append(" - [ ] Run <!-- /analyze -->")
                 checkbox_list.append("[*]")
